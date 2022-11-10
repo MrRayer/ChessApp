@@ -17,5 +17,9 @@
             EndX = _EndX;
             EndY = _EndY;
         }
+        public Object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }

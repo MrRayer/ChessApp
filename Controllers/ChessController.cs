@@ -15,22 +15,19 @@ namespace ChessApp.Controllers
         //also used to request ongoing match by giving an id on the request
         public IActionResult StartMatch(int _Id = -1)
         {
-            List<Models.ChessMatch> MatchList = _MatchList;
-            int MatchCounter = _MatchCounter;
             Trace.WriteLine("------ DEBUG ------");
             Trace.WriteLine("IActionResult StartMatch");
             if (_Id < 0)
             {
                 Trace.WriteLine("creating new match");
-                Trace.WriteLine(MatchList.Count);
-                MatchList.Add(new(MatchCounter));
-                Trace.WriteLine(MatchList.Count);
+                Trace.WriteLine(_MatchList.Count);
+                _MatchList.Add(new(_MatchCounter));
+                Trace.WriteLine(_MatchList.Count);
                 Trace.WriteLine("new match created");
-                _Id = MatchCounter;
-                MatchCounter++;
-                _MatchList = MatchList;
-                _MatchCounter = MatchCounter;
+                _Id = _MatchCounter;
+                _MatchCounter++;
             }
+            List<Models.ChessMatch> MatchList = _MatchList;
             foreach (Models.ChessMatch match in MatchList)
             {
                 if (_Id == match.Id)
@@ -46,11 +43,9 @@ namespace ChessApp.Controllers
         [HttpPost]
         public IActionResult Move(string _move)
         {
-            List<Models.ChessMatch> MatchList = _MatchList;
-            int MatchCounter = _MatchCounter;
             Trace.WriteLine("------ DEBUG ------");
             Trace.WriteLine("IActionResult Move");
-            Trace.WriteLine($"Matches in MatchList: {MatchList.Count}");
+            Trace.WriteLine($"Matches in MatchList: {_MatchList.Count}");
             Trace.WriteLine($"json received: {_move}");
             Models.Move Movement;
             try
@@ -64,22 +59,63 @@ namespace ChessApp.Controllers
             }
             Trace.WriteLine("json - ok, validating");
             Trace.WriteLine("comparing ids");
-            Trace.WriteLine(MatchList.Count);
+            Trace.WriteLine(_MatchList.Count);
+            List<Models.ChessMatch> MatchList = _MatchList;
+            int matchNumber = 0;
             foreach (Models.ChessMatch Match in MatchList)
             {
                 Trace.WriteLine($"{Match.Id} | {Movement.Id}");
                 if(Match.Id == Movement.Id)
                 {
-                    if (Match.Move(Movement)) { Trace.WriteLine("movement made"); }
+                    if (Match.Move(Movement))
+                    {
+                        Trace.WriteLine("movement made");
+                        Trace.WriteLine("overwriting:");
+                        foreach (List<string> row in _MatchList[matchNumber].Board)
+                        {
+                            string rowReturn = "<";
+                            foreach (string col in row)
+                            {
+                                if (rowReturn != "<") { rowReturn += ";"; };
+                                if (col == "") { rowReturn += "__"; }
+                                else { rowReturn += col; }
+                            }
+                            rowReturn += ">";
+                            Trace.WriteLine(rowReturn);
+                        }
+                        Trace.WriteLine("with:");
+                        foreach (List<string> row in Match.Board)
+                        {
+                            string rowReturn = "<";
+                            foreach (string col in row)
+                            {
+                                if (rowReturn != "<") { rowReturn += ";"; };
+                                if (col == "") { rowReturn += "__"; }
+                                else { rowReturn += col; }
+                            }
+                            rowReturn += ">";
+                            Trace.WriteLine(rowReturn);
+                        }
+                        _MatchList[matchNumber] = Match;
+                        Trace.WriteLine("result:");
+                        foreach (List<string> row in _MatchList[matchNumber].Board)
+                        {
+                            string rowReturn = "<";
+                            foreach (string col in row)
+                            {
+                                if (rowReturn != "<") { rowReturn += ";"; }
+                                if (col == "") { rowReturn += "__"; }
+                                else { rowReturn += col; }
+                            }
+                            rowReturn += ">";
+                            Trace.WriteLine(rowReturn);
+                        }
+                    }
                     else { Trace.WriteLine("movement not made"); }
-
-                    _MatchList = MatchList;
-                    _MatchCounter = MatchCounter;
                     return Content("Success");
                 }
+                matchNumber++;
             }
-            _MatchList = MatchList;
-            _MatchCounter = MatchCounter;
             return Content("Error: id not found");
             }
     }
