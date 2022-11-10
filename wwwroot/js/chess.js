@@ -37,8 +37,10 @@ function squareClicked(element){
 	}
 }
 
-function requestMatch(id = null) {
-	_id = JSON.stringify(id)
+function requestMatch(__id = null) {
+	console.log(__id+" id que llega al request")
+	_id = JSON.stringify(__id)
+	console.log(_id)
 	$.ajax({
 		type: "GET",
 		url: "Chess/StartMatch",
@@ -51,6 +53,8 @@ function requestMatch(id = null) {
 }
 // loadBoard: load the match into the board using it's two internal fuctions to check each square
 function loadBoard(Match) {
+	currentMatchId = Match.Id
+	document.querySelector('[name="IdDisplay"]').value = currentMatchId
 	function checkCol(col) {
 		rowEl = board.children[rowIndex]
 		colEl = rowEl.children[colIndex]
@@ -64,9 +68,6 @@ function loadBoard(Match) {
 	}
 	if (Match.Victory == "White") alert("White victory")
 	if (Match.Victory == "Black") alert("Black victory")
-	currentMatchId = Match.Id
-	document.querySelector('[name="IdDisplay"]').innerHTML = "<h3>Id: "+Match.Id+"</h3>"
-	document.querySelector('[name="Refresh"]').setAttribute('onclick','requestMatch('+Match.Id+')')
 	board = document.querySelector('[name="Board"]')
 	rowIndex = 0
 	Match.Board.forEach(checkRow)
@@ -83,4 +84,9 @@ function makeMove(moving) {
 			requestMatch(currentMatchId)
 		},
 	});
+}
+function refreshMatch() {
+	idToRequest = parseInt(document.querySelector('[name="IdDisplay"]').value)
+	console.log(idToRequest)
+	requestMatch(idToRequest)
 }

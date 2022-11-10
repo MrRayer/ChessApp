@@ -16,7 +16,7 @@ namespace ChessApp.Controllers
         public IActionResult StartMatch(int _Id = -1)
         {
             Trace.WriteLine("------ DEBUG ------");
-            Trace.WriteLine("IActionResult StartMatch");
+            Trace.WriteLine($"IActionResult StartMatch with id: {_Id}");
             if (_Id < 0)
             {
                 Trace.WriteLine("creating new match");

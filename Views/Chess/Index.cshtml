@@ -1,8 +1,8 @@
 ﻿<button class="btn btn-primary" onclick="requestMatch()">New Match</button>
-<button class="btn btn-primary" name="Refresh" onclick="requestMatch()">Refresh</button>
+<button class="btn btn-primary" name="Refresh" onclick="refreshMatch()">Refresh</button>
+<input class="form-control" type="text" name="IdDisplay"/>
 
 <div class="boardContainer">
-	<div name="IdDisplay"></div>
 	<div class="chessBoard" name="Board">
 		<div class="tableRow" data-row="0">
 			<div class="WSquare" data-column="0"><div onclick="squareClicked(this)" class="piece" id=""></div></div>
